@@ -207,11 +207,17 @@ button {
   transition: width var(--duration-normal) var(--ease-out);
 }
 
-.nav__link:hover {
+.nav__link:hover,
+.nav__link.active {
   color: var(--black);
 }
 
-.nav__link:hover::after {
+.nav__link.active {
+  font-weight: 600;
+}
+
+.nav__link:hover::after,
+.nav__link.active::after {
   width: 100%;
 }
 
@@ -1710,6 +1716,12 @@ body:hover .cursor-glow {
 
   .nav__link:hover {
     background: var(--gray-50);
+  }
+
+  .nav__link.active {
+    background: var(--gray-100);
+    color: var(--black);
+    font-weight: 600;
   }
 
   .header__cta {

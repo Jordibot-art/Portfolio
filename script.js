@@ -121,6 +121,34 @@
   const allProjectsList = document.getElementById('all-projects-list');
 
   // ==========================================
+  // NAVIGATION ACTIVE STATE MANAGEMENT
+  // ==========================================
+  let isNavClickScrolling = false;
+  let navClickTimer = null;
+
+  function setActiveNav(targetHref) {
+    const navLinks = document.querySelectorAll('.nav__link');
+    navLinks.forEach(link => {
+      link.style.color = '';
+      link.style.fontWeight = '';
+      if (link.getAttribute('href') === targetHref) {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
+  }
+
+  function clearActiveNav() {
+    const navLinks = document.querySelectorAll('.nav__link');
+    navLinks.forEach(link => {
+      link.style.color = '';
+      link.style.fontWeight = '';
+      link.classList.remove('active');
+    });
+  }
+
+  // ==========================================
   // HEADER SCROLL EFFECT
   // ==========================================
   let lastScroll = 0;
@@ -135,6 +163,7 @@
     }
 
     lastScroll = currentScroll;
+    updateActiveNavOnScroll();
   }
 
   window.addEventListener('scroll', handleScroll, { passive: true });
@@ -158,14 +187,35 @@
   }
 
   // ==========================================
-  // SMOOTH SCROLL FOR NAV LINKS
+  // SMOOTH SCROLL & CLICK HANDLING FOR NAV
   // ==========================================
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
       if (this.id === 'view-all-btn') return; // Handled by popup modal
-      const target = document.querySelector(this.getAttribute('href'));
+      const href = this.getAttribute('href');
+      if (!href) return;
+
+      if (href === '#') {
+        e.preventDefault();
+        clearActiveNav();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      const target = document.querySelector(href);
       if (target) {
         e.preventDefault();
+
+        // Highlight active immediately when a nav link or related anchor is clicked
+        if (['#work', '#about', '#skills', '#contact'].includes(href)) {
+          setActiveNav(href);
+          isNavClickScrolling = true;
+          clearTimeout(navClickTimer);
+          navClickTimer = setTimeout(() => {
+            isNavClickScrolling = false;
+          }, 850);
+        }
+
         const offsetTop = target.getBoundingClientRect().top + window.scrollY - 80;
         window.scrollTo({ top: offsetTop, behavior: 'smooth' });
       }
@@ -470,35 +520,41 @@
   }
 
   // ==========================================
-  // ACTIVE NAV LINK HIGHLIGHTING
+  // ACTIVE NAV LINK HIGHLIGHTING ON SCROLL
   // ==========================================
-  function setupActiveNav() {
-    const sections = document.querySelectorAll('section[id], footer[id]');
-    const navLinks = document.querySelectorAll('.nav__link');
+  function updateActiveNavOnScroll() {
+    if (isNavClickScrolling) return;
 
-    const sectionObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const id = entry.target.id;
-            navLinks.forEach(link => {
-              link.style.color = '';
-              link.style.fontWeight = '';
-              if (link.getAttribute('href') === `#${id}`) {
-                link.style.color = 'var(--black)';
-                link.style.fontWeight = '600';
-              }
-            });
-          }
-        });
-      },
-      {
-        threshold: 0.3,
-        rootMargin: '-80px 0px -40% 0px'
+    const scrollY = window.scrollY;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    // Reached near bottom of page -> highlight contact
+    if (scrollY + windowHeight >= documentHeight - 60) {
+      setActiveNav('#contact');
+      return;
+    }
+
+    const sectionIds = ['work', 'about', 'skills', 'contact'];
+    const headerOffset = 130; // 80px header height + padding offset
+
+    let activeId = null;
+    for (let i = sectionIds.length - 1; i >= 0; i--) {
+      const section = document.getElementById(sectionIds[i]);
+      if (section) {
+        const top = section.getBoundingClientRect().top + window.scrollY;
+        if (scrollY + headerOffset >= top) {
+          activeId = sectionIds[i];
+          break;
+        }
       }
-    );
+    }
 
-    sections.forEach(section => sectionObserver.observe(section));
+    if (activeId) {
+      setActiveNav(`#${activeId}`);
+    } else {
+      clearActiveNav();
+    }
   }
 
   // ==========================================
@@ -508,7 +564,13 @@
     setupRevealAnimations();
     animateCounters();
     setupCursorGlow();
-    setupActiveNav();
+
+    // Check initial hash or scroll position
+    if (window.location.hash && ['#work', '#about', '#skills', '#contact'].includes(window.location.hash)) {
+      setActiveNav(window.location.hash);
+    } else {
+      updateActiveNavOnScroll();
+    }
 
     // Initial scroll check
     handleScroll();
