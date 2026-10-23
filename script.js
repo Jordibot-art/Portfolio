@@ -558,6 +558,171 @@
   }
 
   // ==========================================
+  // CONTACT MODAL & FORM
+  // ==========================================
+  const contactModalOverlay = document.getElementById('contact-modal-overlay');
+  const contactModalClose = document.getElementById('contact-modal-close');
+  const contactForm = document.getElementById('portfolio-contact-form');
+  const contactPurposeSelect = document.getElementById('contact-purpose');
+  const contactNameInput = document.getElementById('contact-name');
+  const contactFormStatus = document.getElementById('contact-form-status');
+  const contactSubmitBtn = document.getElementById('contact-submit-btn');
+
+  function openContactModal(purpose) {
+    if (!contactModalOverlay) return;
+    if (contactPurposeSelect && purpose) {
+      contactPurposeSelect.value = purpose;
+    }
+    if (contactFormStatus) {
+      contactFormStatus.style.display = 'none';
+      contactFormStatus.textContent = '';
+      contactFormStatus.className = 'form-status';
+    }
+    contactModalOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => {
+      if (contactNameInput) contactNameInput.focus();
+    }, 150);
+  }
+
+  function closeContactModal() {
+    if (!contactModalOverlay) return;
+    contactModalOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  if (contactModalClose) {
+    contactModalClose.addEventListener('click', closeContactModal);
+  }
+
+  if (contactModalOverlay) {
+    contactModalOverlay.addEventListener('click', (e) => {
+      if (e.target === contactModalOverlay) {
+        closeContactModal();
+      }
+    });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && contactModalOverlay && contactModalOverlay.classList.contains('active')) {
+      closeContactModal();
+    }
+  });
+
+  // "Let's talk" (header CTA) -> Opens general contact form
+  const headerCta = document.getElementById('header-cta');
+  if (headerCta) {
+    headerCta.addEventListener('click', (e) => {
+      e.preventDefault();
+      openContactModal('general');
+    });
+  }
+
+  // "Get in touch" (Seeking OJT hero card) -> Opens form preselected with "OJT / Internship"
+  const heroOjtBtn = document.getElementById('hero-ojt-contact-btn');
+  if (heroOjtBtn) {
+    heroOjtBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openContactModal('ojt');
+    });
+  }
+
+  // Footer "Send a Message" button
+  const footerContactBtn = document.getElementById('footer-contact-btn');
+  if (footerContactBtn) {
+    footerContactBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openContactModal('general');
+    });
+  }
+
+  // Chatbot header contact button
+  const chatHeaderContactBtn = document.getElementById('pf-chat-contact-btn');
+  if (chatHeaderContactBtn) {
+    chatHeaderContactBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openContactModal('general');
+    });
+  }
+
+  // Event delegation for any "Open Contact Form" buttons inside chatbot log
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action="open-contact-modal"]');
+    if (btn) {
+      e.preventDefault();
+      const purpose = btn.getAttribute('data-purpose') || 'general';
+      openContactModal(purpose);
+    }
+  });
+
+  // Make openContactModal accessible globally
+  window.openContactModal = openContactModal;
+
+  // Handle Contact Form Submission via FormSubmit
+  if (contactForm) {
+    contactForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtnSpan = contactSubmitBtn ? contactSubmitBtn.querySelector('span') : null;
+      const originalBtnText = submitBtnSpan ? submitBtnSpan.textContent : 'Send Message';
+
+      const name = document.getElementById('contact-name').value.trim();
+      const email = document.getElementById('contact-email-input').value.trim();
+      const purpose = contactPurposeSelect ? contactPurposeSelect.value : 'general';
+      const purposeText = contactPurposeSelect ? contactPurposeSelect.options[contactPurposeSelect.selectedIndex].text : 'General Inquiry';
+      const message = document.getElementById('contact-message').value.trim();
+
+      if (submitBtnSpan) submitBtnSpan.textContent = 'Sending...';
+      if (contactSubmitBtn) contactSubmitBtn.disabled = true;
+      if (contactFormStatus) contactFormStatus.style.display = 'none';
+
+      try {
+        const response = await fetch('https://formsubmit.co/ajax/ramosjohnariel761@gmail.com', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            purpose: purposeText,
+            message: message,
+            _subject: `New Portfolio Message from ${name} [${purposeText}]`,
+            _captcha: 'false',
+            _template: 'table'
+          })
+        });
+
+        const data = await response.json();
+
+        if (contactFormStatus) {
+          contactFormStatus.style.display = 'block';
+          contactFormStatus.className = 'form-status success';
+          contactFormStatus.innerHTML = `
+            <strong>✅ Thank you, ${name}!</strong> Your message has been sent to John Ariel. I'll get back to you at <em>${email}</em> shortly!
+          `;
+        }
+        contactForm.reset();
+
+        setTimeout(() => {
+          closeContactModal();
+        }, 3500);
+      } catch (err) {
+        if (contactFormStatus) {
+          contactFormStatus.style.display = 'block';
+          contactFormStatus.className = 'form-status error';
+          contactFormStatus.innerHTML = `
+            Could not connect to the form server right now. You can reach me directly via email at <a href="mailto:ramosjohnariel761@gmail.com?subject=Portfolio%20Inquiry%20from%20${encodeURIComponent(name)}&body=${encodeURIComponent(message)}">ramosjohnariel761@gmail.com</a> or text 09388052961!
+          `;
+        }
+      } finally {
+        if (submitBtnSpan) submitBtnSpan.textContent = originalBtnText;
+        if (contactSubmitBtn) contactSubmitBtn.disabled = false;
+      }
+    });
+  }
+
+  // ==========================================
   // INITIALIZE
   // ==========================================
   function init() {

@@ -21,7 +21,7 @@ EDUCATION (SCHOOL, COURSE & YEAR):
 I am a **4th-year BSIT student** at **Cebu Eastern College** in Cebu City, preparing for my 2nd-semester OJT. My studies combine full-stack web and mobile development coursework with practical database architecture and UI design. Would you like to check out my **availability for an OJT** or explore my **top projects**?
 
 CONTACT (EMAIL, GITHUB & PHONE):
-You can reach me directly by email at **ramosjohnariel761@gmail.com**, phone or text at **09388052961**, or explore my code on GitHub at **github.com/Jordibot-art**. Are you interested in discussing an **OJT placement** or collaborating on a project?
+You can reach me directly by email at **ramosjohnariel761@gmail.com**, phone or text at **09388052961**, or explore my code on GitHub at **github.com/Jordibot-art**. You can also click the **Open Contact Form** button below to send me a direct message!
 
 AVAILABILITY (OJT & WORK):
 I am actively seeking an **IT-related OJT placement** for my 2nd semester as a 4th-year BSIT student. I am open to **remote or on-site opportunities in Cebu**, as well as freelance or junior developer roles. Would you like my **contact details** or to review my **top projects**?
@@ -129,7 +129,7 @@ function getSmartFallback(query) {
 
   // Contact / email / phone
   if (/contact|email|reach|phone|call|github|linkedin|message|number/.test(q)) {
-    return "You can reach me directly via email at **ramosjohnariel761@gmail.com**, phone or text at **09388052961**, or explore my code on GitHub at **github.com/Jordibot-art**. Are you interested in discussing an **OJT placement** or collaborating on a project?";
+    return "You can reach me directly via email at **ramosjohnariel761@gmail.com**, phone or text at **09388052961**, or explore my code on GitHub at **github.com/Jordibot-art**. You can also click the **Open Contact Form** button below to send me a direct message!";
   }
 
   // About John / background

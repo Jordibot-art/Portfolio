@@ -90,7 +90,7 @@
           <p class="hero__card-text">
             4th-year BSIT student actively seeking an <strong>IT-related OJT placement for 2nd Semester</strong>.
           </p>
-          <a href="#contact" class="hero__card-link">
+          <a href="#contact" class="hero__card-link" id="hero-ojt-contact-btn">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M1 7H13M13 7L7 1M13 7L7 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                 stroke-linejoin="round" />
@@ -430,6 +430,73 @@
     </div>
   </div>
 
+  <!-- ========== CONTACT FORM MODAL ========== -->
+  <div class="modal-overlay" id="contact-modal-overlay">
+    <div class="modal modal--contact" id="contact-modal">
+      <button class="modal__close" id="contact-modal-close" aria-label="Close contact modal">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+
+      <div class="contact-modal__header">
+        <span class="modal__tag">SEND A DIRECT MESSAGE</span>
+        <h3 class="modal__title">Let's Connect &amp; Collaborate</h3>
+        <p class="modal__category">Fill out the short form below and I'll get back to you directly via email or phone.</p>
+      </div>
+
+      <form id="portfolio-contact-form" class="contact-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contact-name">Your Name <span class="required">*</span></label>
+            <input type="text" id="contact-name" name="name" placeholder="e.g. Maria Santos" required autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label for="contact-email-input">Your Email <span class="required">*</span></label>
+            <input type="email" id="contact-email-input" name="email" placeholder="e.g. maria@company.com" required autocomplete="email" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="contact-purpose">Purpose of Message <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select id="contact-purpose" name="purpose" required>
+              <option value="ojt">🎓 OJT / Internship Placement</option>
+              <option value="general" selected>💬 General Inquiry / Let's Talk</option>
+              <option value="junior-role">💼 Junior Developer / Entry-Level Role</option>
+              <option value="collaboration">🚀 Project Collaboration / Freelance</option>
+              <option value="other">✨ Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="contact-message">Message <span class="required">*</span></label>
+          <textarea id="contact-message" name="message" rows="4" placeholder="Tell me about your project, team, or opportunity..." required></textarea>
+        </div>
+
+        <div class="form-status" id="contact-form-status" style="display: none;"></div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn--primary form-submit-btn" id="contact-submit-btn">
+            <span>Send Message</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+
+        <div class="form-direct-reach">
+          <span>Prefer direct email or call?</span>
+          <a href="mailto:ramosjohnariel761@gmail.com">ramosjohnariel761@gmail.com</a>
+          <span class="dot-sep">&bull;</span>
+          <a href="tel:09388052961">09388052961</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- ========== ABOUT ========== -->
   <section class="about" id="about">
     <div class="container about__inner">
@@ -609,6 +676,13 @@
       <div class="contact__left">
         <span class="section-label">GET IN TOUCH</span>
         <h2 class="contact__title">Let's connect &amp;<br />create something great.</h2>
+        <button type="button" class="btn btn--primary" id="footer-contact-btn" style="margin-top: 24px;">
+          Send a Message
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M1 13L13 1M13 1H3M13 1V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
       </div>
       <div class="contact__right">
         <div class="contact__info">
@@ -827,6 +901,64 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
+    .pf-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pf-header-contact-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .pf-header-contact-btn:hover {
+      background: #ffffff;
+      color: #0a0a0a;
+      border-color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .pf-msg-action {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .pf-action-contact-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 8px;
+      background: #0a0a0a;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid #0a0a0a;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .pf-action-contact-btn:hover {
+      background: #262626;
+      border-color: #262626;
+      transform: translateY(-1px);
+    }
+
     #pf-chat-log {
       flex: 1;
       overflow-y: auto;
@@ -1035,14 +1167,22 @@
           <h4>John Ariel's Assistant</h4>
           <span>Ask about projects, skills &amp; background</span>
         </div>
+      <div class="pf-header-actions">
+        <button type="button" class="pf-header-contact-btn" id="pf-chat-contact-btn" title="Open Contact Form">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+            <polyline points="22,6 12,13 2,6"></polyline>
+          </svg>
+          Contact
+        </button>
+        <button class="pf-close-btn" id="pf-chat-close" aria-label="Close chat">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
-      <button class="pf-close-btn" id="pf-chat-close" aria-label="Close chat">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
     </header>
 
     <div id="pf-chat-log" aria-live="polite">
@@ -1249,10 +1389,16 @@
           var data = await res.json();
           if (!res.ok) throw new Error(data.error || "Request failed");
           pending.innerHTML = renderBotText(data.reply);
+          if (/ramosjohnariel761@gmail\.com|09388052961|contact/i.test(data.reply)) {
+            var actionDiv = document.createElement("div");
+            actionDiv.className = "pf-msg-action";
+            actionDiv.innerHTML = '<button type="button" class="pf-action-contact-btn" data-action="open-contact-modal">✉️ Open Contact Form</button>';
+            pending.appendChild(actionDiv);
+          }
           history.push({ role: "assistant", content: data.reply });
           renderFollowupChips();
         } catch (err) {
-          pending.textContent = "I'm temporarily having trouble connecting to the AI service. Feel free to contact John Ariel directly at ramosjohnariel761@gmail.com or call/text 09388052961!";
+          pending.innerHTML = 'I\'m temporarily having trouble connecting to the AI service. Feel free to contact John Ariel directly!<div class="pf-msg-action"><button type="button" class="pf-action-contact-btn" data-action="open-contact-modal">✉️ Open Contact Form</button></div>';
           history.pop();
         } finally {
           send.disabled = false;
