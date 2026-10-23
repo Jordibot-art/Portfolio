@@ -271,48 +271,63 @@ export default async function handler(req, res) {
       contents: contents,
       generationConfig: {
         temperature: 0.4,
-        maxOutputTokens: 800
+        maxOutputTokens: 500
       }
     };
 
-    // Resilient Google Gemini API request with fallback models
-    const candidateModels = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite'];
+    // Fast, active models with available quota
+    const candidateModels = [
+      'gemini-3-flash-preview',
+      'gemini-3.5-flash',
+      'gemini-3.6-flash',
+      'gemini-2.5-flash'
+    ];
     let geminiRes = null;
     let lastErrText = '';
 
     for (const model of candidateModels) {
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      const res = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 6500);
 
-      if (res.ok) {
-        geminiRes = res;
-        break;
-      } else {
-        lastErrText = await res.text();
-        console.warn(`Model ${model} failed, trying next candidate. Error:`, lastErrText);
+      try {
+        const res = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller.signal
+        });
+        clearTimeout(timer);
+
+        if (res.ok) {
+          geminiRes = res;
+          break;
+        } else {
+          lastErrText = await res.text();
+          console.warn(`Model ${model} failed (status ${res.status}), trying next candidate.`);
+        }
+      } catch (reqErr) {
+        clearTimeout(timer);
+        console.warn(`Model ${model} request error/timeout:`, reqErr.message);
       }
     }
 
     if (!geminiRes) {
-      return res.status(500).json({
-        error: `Gemini API error from all model candidates: ${lastErrText}`
-      });
+      console.warn('All Gemini candidate models failed. Returning graceful fallback. Last err:', lastErrText);
+      const fallbackReply = "I'm John Ariel C. Ramos, a 21-year-old aspiring Full-Stack Developer & UI/UX Designer from Cebu City, Philippines. I'm currently a 4th-year BSIT student actively looking for an IT-related On-the-Job Training (OJT) placement for my upcoming 2nd semester. If you'd like to get in touch, please call or text me at 09388052961 or email ramosjohnariel761@gmail.com!";
+      return res.status(200).json({ reply: fallbackReply });
     }
 
     const data = await geminiRes.json();
     const reply =
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "I'm here to help, but I couldn't generate a response. Please ask again!";
+      "I'm here to help, but I couldn't generate a response. Feel free to reach me at ramosjohnariel761@gmail.com or call 09388052961!";
 
     return res.status(200).json({ reply });
   } catch (err) {
     console.error('Server handler error:', err);
-    return res.status(500).json({
-      error: 'An unexpected error occurred while communicating with the AI service.'
+    return res.status(200).json({
+      reply: "Hi! I'm John Ariel C. Ramos. I'm currently looking for an IT-related OJT placement for 2nd semester of 4th year. You can reach me directly at 09388052961 or ramosjohnariel761@gmail.com!"
     });
   }
 }

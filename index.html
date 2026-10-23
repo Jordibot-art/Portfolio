@@ -1147,7 +1147,7 @@
           pending.textContent = data.reply;
           history.push({ role: "assistant", content: data.reply });
         } catch (err) {
-          pending.textContent = "Sorry, I couldn't answer that right now. Please try again in a moment.";
+          pending.textContent = "I'm temporarily having trouble connecting to the AI service. Feel free to contact John Ariel directly at ramosjohnariel761@gmail.com or call/text 09388052961!";
           history.pop();
         } finally {
           send.disabled = false;
