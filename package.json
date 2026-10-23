@@ -1,0 +1,10 @@
+{
+  "name": "portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Portfolio of John Ariel Ramos — Full-Stack Developer & UI/UX Designer",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

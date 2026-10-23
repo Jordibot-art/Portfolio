@@ -694,6 +694,469 @@
   </footer>
 
   <script src="script.js"></script>
+
+  <!-- ===== PORTFOLIO AI CHAT: paste this block right before </body> ===== -->
+  <style>
+    #pf-chat-btn {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      cursor: pointer;
+      font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 1;
+      background: #0a0a0a;
+      color: #ffffff;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #pf-chat-btn:hover {
+      background: #171717;
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px -4px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.25);
+    }
+
+    #pf-chat-btn:active {
+      transform: translateY(0);
+    }
+
+    #pf-chat-btn .pf-btn-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+    }
+
+    #pf-chat-btn .pf-online-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+    }
+
+    #pf-chat {
+      position: fixed;
+      right: 24px;
+      bottom: 82px;
+      z-index: 9999;
+      width: min(380px, calc(100vw - 32px));
+      height: min(520px, calc(100vh - 110px));
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #ffffff;
+      color: #171717;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 18px;
+      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.22), 0 0 1px 1px rgba(0, 0, 0, 0.05);
+      font-family: var(--font-sans, 'Inter', system-ui, sans-serif);
+      font-size: 14px;
+      line-height: 1.5;
+      opacity: 0;
+      transform: translateY(16px) scale(0.96);
+      pointer-events: none;
+      visibility: hidden;
+      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+    }
+
+    #pf-chat.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+      visibility: visible;
+    }
+
+    #pf-chat header {
+      padding: 14px 16px;
+      background: #0a0a0a;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .pf-header-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pf-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #262626;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      position: relative;
+    }
+
+    .pf-avatar-dot {
+      position: absolute;
+      bottom: -1px;
+      right: -1px;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 2px solid #0a0a0a;
+    }
+
+    .pf-header-text h4 {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.2;
+    }
+
+    .pf-header-text span {
+      font-size: 11px;
+      color: #a3a3a3;
+      display: block;
+    }
+
+    .pf-close-btn {
+      background: transparent;
+      border: none;
+      color: #a3a3a3;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, background-color 0.15s;
+    }
+
+    .pf-close-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    #pf-chat-log {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #fafafa;
+    }
+
+    #pf-chat-log::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    #pf-chat-log::-webkit-scrollbar-thumb {
+      background: #d4d4d4;
+      border-radius: 4px;
+    }
+
+    .pf-msg {
+      max-width: 84%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+
+    .pf-msg.bot {
+      align-self: flex-start;
+      background: #ffffff;
+      color: #171717;
+      border: 1px solid #e5e5e5;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .pf-msg.user {
+      align-self: flex-end;
+      background: #0a0a0a;
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .pf-quick-prompts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .pf-prompt-chip {
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 12px;
+      color: #404040;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: left;
+    }
+
+    .pf-prompt-chip:hover {
+      background: #0a0a0a;
+      color: #ffffff;
+      border-color: #0a0a0a;
+      transform: translateY(-1px);
+    }
+
+    #pf-chat-form {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      background: #ffffff;
+      border-top: 1px solid #ebebeb;
+    }
+
+    #pf-chat-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid #d4d4d4;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 13.5px;
+      color: #171717;
+      background: #fafafa;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+
+    #pf-chat-input:focus {
+      outline: none;
+      background: #ffffff;
+      border-color: #0a0a0a;
+      box-shadow: 0 0 0 3px rgba(10, 10, 10, 0.08);
+    }
+
+    #pf-chat-send {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 10px;
+      background: #0a0a0a;
+      color: #ffffff;
+      font-family: inherit;
+      font-weight: 500;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: background 0.2s, opacity 0.2s, transform 0.15s;
+    }
+
+    #pf-chat-send:hover:not(:disabled) {
+      background: #262626;
+      transform: translateY(-1px);
+    }
+
+    #pf-chat-send:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    #pf-chat-btn:focus-visible,
+    #pf-chat-send:focus-visible,
+    #pf-chat-input:focus-visible,
+    .pf-close-btn:focus-visible {
+      outline: 2px solid #0a0a0a;
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 480px) {
+      #pf-chat-btn {
+        right: 16px;
+        bottom: 16px;
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+
+      #pf-chat {
+        right: 16px;
+        left: 16px;
+        bottom: 74px;
+        width: auto;
+        height: min(490px, calc(100vh - 90px));
+      }
+    }
+  </style>
+
+  <button id="pf-chat-btn" aria-expanded="false" aria-controls="pf-chat">
+    <span class="pf-online-dot"></span>
+    <span class="pf-btn-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+    </span>
+    <span>Ask about me</span>
+  </button>
+
+  <section id="pf-chat" aria-label="Portfolio assistant">
+    <header>
+      <div class="pf-header-info">
+        <div class="pf-avatar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"></path>
+            <rect x="3" y="8" width="18" height="12" rx="4"></rect>
+            <circle cx="9" cy="14" r="1"></circle>
+            <circle cx="15" cy="14" r="1"></circle>
+          </svg>
+          <span class="pf-avatar-dot"></span>
+        </div>
+        <div class="pf-header-text">
+          <h4>John Ariel's Assistant</h4>
+          <span>Ask about projects, skills &amp; background</span>
+        </div>
+      </div>
+      <button class="pf-close-btn" id="pf-chat-close" aria-label="Close chat">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </header>
+
+    <div id="pf-chat-log" aria-live="polite">
+      <div class="pf-msg bot">Hi! Ask me about projects, skills, or experience.</div>
+      <div class="pf-quick-prompts">
+        <button type="button" class="pf-prompt-chip" data-prompt="What are your featured projects?">🚀 Top
+          projects</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="What technologies and tools do you work with?">💻 Tech
+          stack</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="Are you available for internships or junior roles?">💼
+          Availability</button>
+      </div>
+    </div>
+
+    <form id="pf-chat-form">
+      <input id="pf-chat-input" placeholder="Type your question..." autocomplete="off" maxlength="500" required>
+      <button id="pf-chat-send" type="submit" aria-label="Send message">
+        <span>Send</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </form>
+  </section>
+
+  <script>
+    (function () {
+      // 1) Put the URL of your backend function here (see api-chat.js)
+      var API_URL = "/api/chat";
+
+      var btn = document.getElementById("pf-chat-btn");
+      var box = document.getElementById("pf-chat");
+      var log = document.getElementById("pf-chat-log");
+      var form = document.getElementById("pf-chat-form");
+      var input = document.getElementById("pf-chat-input");
+      var send = document.getElementById("pf-chat-send");
+      var closeBtn = document.getElementById("pf-chat-close");
+      var history = [];
+
+      function toggleChat(forceOpen) {
+        var shouldOpen = typeof forceOpen === "boolean" ? forceOpen : !box.classList.contains("open");
+        box.classList.toggle("open", shouldOpen);
+        btn.setAttribute("aria-expanded", shouldOpen);
+        if (shouldOpen) {
+          input.focus();
+        }
+      }
+
+      btn.addEventListener("click", function () {
+        toggleChat();
+      });
+
+      if (closeBtn) {
+        closeBtn.addEventListener("click", function (e) {
+          e.stopPropagation();
+          toggleChat(false);
+        });
+      }
+
+      // Quick suggestion prompt chips
+      var chips = document.querySelectorAll(".pf-prompt-chip");
+      chips.forEach(function (chip) {
+        chip.addEventListener("click", function () {
+          var promptText = chip.getAttribute("data-prompt");
+          if (promptText) {
+            input.value = promptText;
+            form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event("submit", { cancelable: true }));
+          }
+        });
+      });
+
+      // 2) Reads the visible text of YOUR page, so the AI answers from it
+      function getPortfolioText() {
+        var clone = document.body.cloneNode(true);
+        clone.querySelectorAll("script, style, noscript, #pf-chat, #pf-chat-btn").forEach(function (n) { n.remove(); });
+        return (clone.textContent || "").replace(/\s+/g, " ").trim().slice(0, 15000);
+      }
+
+      function add(text, who) {
+        var d = document.createElement("div");
+        d.className = "pf-msg " + who;
+        d.textContent = text;
+        log.appendChild(d);
+        log.scrollTop = log.scrollHeight;
+        return d;
+      }
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        var q = input.value.trim();
+        if (!q) return;
+        input.value = "";
+        add(q, "user");
+        history.push({ role: "user", content: q });
+        send.disabled = true;
+        var pending = add("Thinking…", "bot");
+        try {
+          var res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ context: getPortfolioText(), messages: history.slice(-8) })
+          });
+          var data = await res.json();
+          if (!res.ok) throw new Error(data.error || "Request failed");
+          pending.textContent = data.reply;
+          history.push({ role: "assistant", content: data.reply });
+        } catch (err) {
+          pending.textContent = "Sorry, I couldn't answer that right now. Please try again in a moment.";
+          history.pop();
+        } finally {
+          send.disabled = false;
+          input.focus();
+        }
+      });
+    })();
+  </script>
+  <!-- ===== END PORTFOLIO AI CHAT ===== -->
 </body>
 
 </html>
