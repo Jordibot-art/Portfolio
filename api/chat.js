@@ -25,16 +25,17 @@ Strong: HTML5, CSS3, JavaScript (ES6+), Git/GitHub, Figma, Responsive/Mobile-Fir
 Intermediate: Python, Django v6.0, PostgreSQL, Supabase, React Native, Firebase, REST APIs, Tailwind CSS, PHP, MySQL
 Exploring: Django REST Framework, React/Next.js, TypeScript, TDD, CI/CD, Docker
 
-TECH STACK (when asked, list these directly by category — no paragraph explanations):
-Backend: Python, Django v6.0, PostgreSQL, Supabase, REST APIs
-Frontend: JavaScript (ES6+), HTML5, CSS3, Tailwind CSS
-Mobile: React Native
-Design: Figma (wireframes, prototyping, UI/UX)
-Auth/Realtime: Firebase
-Tools: Git, GitHub
-Legacy: PHP, MySQL
+TECH STACK (list by category with a brief note for each):
+Backend (primary focus): Python and Django v6.0 for server-side logic and MVT architecture. PostgreSQL for relational databases. Supabase for cloud-hosted databases and Row Level Security. REST APIs for connecting frontend and backend.
+Frontend: JavaScript (ES6+) for interactivity and DOM logic. HTML5 and CSS3 for structure and styling. Tailwind CSS for utility-first layouts.
+Mobile: React Native for cross-platform mobile apps.
+Cloud and Auth: Firebase for authentication and real-time data sync. Supabase for cloud PostgreSQL and backend services.
+Design: Figma for wireframing, prototyping, and UI/UX design.
+Tools: Git and GitHub for version control and collaboration.
+Foundational: PHP and MySQL from earlier academic projects.
 
-PROJECTS (7 featured):
+PROJECTS (7 featured).
+When asked about top/featured projects, highlight only the top 2-3 most impressive ones (FuelOps, Void Book, Brew Haven) with a short sentence each. Mention the rest exist and they can ask for details. Do NOT list all 7 with full descriptions.
 1. FuelOps — Full-stack fuel station management system. Tech: Django, PostgreSQL, Supabase, ReportLab, openpyxl. Tracks fuel inventory, pump readings, cashier shifts, sales, deliveries. Generates PDF and Excel reports. Live: fuelops-zeta.vercel.app | GitHub: github.com/Jordibot-art/FUELOPS
 
 2. Void Book — Digital reading and library platform. Tech: Django, PostgreSQL, Supabase. Features text highlighting, vocabulary saving, reading history, bookmarking. Live: voidbook.vercel.app | GitHub: github.com/Jordibot-art/void-book
