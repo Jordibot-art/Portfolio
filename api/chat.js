@@ -166,22 +166,31 @@ export default async function handler(req, res) {
       }
     };
 
-    // Google Gemini API request (gemini-1.5-flash or gemini-2.0-flash)
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    // Resilient Google Gemini API request with fallback models
+    const candidateModels = ['gemini-2.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash-lite'];
+    let geminiRes = null;
+    let lastErrText = '';
 
-    const geminiRes = await fetch(geminiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
+    for (const model of candidateModels) {
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const res = await fetch(geminiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-    if (!geminiRes.ok) {
-      const errData = await geminiRes.text();
-      console.error('Gemini API Error:', errData);
-      return res.status(geminiRes.status).json({
-        error: `Gemini API error: ${geminiRes.statusText}`
+      if (res.ok) {
+        geminiRes = res;
+        break;
+      } else {
+        lastErrText = await res.text();
+        console.warn(`Model ${model} failed, trying next candidate. Error:`, lastErrText);
+      }
+    }
+
+    if (!geminiRes) {
+      return res.status(500).json({
+        error: `Gemini API error from all model candidates: ${lastErrText}`
       });
     }
 
