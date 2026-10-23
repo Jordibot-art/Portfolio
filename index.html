@@ -75,13 +75,6 @@
                 stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </a>
-          <a href="resume.html" target="_blank" class="btn btn--outline" id="hero-resume-btn"
-            title="View & Download Resume">
-            Download Resume
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-            </svg>
-          </a>
         </div>
       </div>
       <div class="hero__visual">
@@ -616,21 +609,6 @@
       <div class="contact__left">
         <span class="section-label">GET IN TOUCH</span>
         <h2 class="contact__title">Let's connect &amp;<br />create something great.</h2>
-
-        <!-- Download Resume Card -->
-        <div class="contact__resume-card">
-          <div class="contact__resume-content">
-            <h3 class="contact__resume-title">Looking for my full resume &amp; credentials?</h3>
-            <p class="contact__resume-desc">View or print my complete, ATS-friendly curriculum vitae featuring detailed
-              project contributions, education, and skill breakdown.</p>
-          </div>
-          <a href="resume.html" target="_blank" class="btn--resume">
-            <span>Download Resume (CV)</span>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
-            </svg>
-          </a>
-        </div>
       </div>
       <div class="contact__right">
         <div class="contact__info">
@@ -930,6 +908,23 @@
       transform: translateY(-1px);
     }
 
+    .pf-followup-prompts {
+      margin-top: 4px;
+      margin-bottom: 6px;
+      animation: pfFadeIn 0.25s ease-out;
+    }
+
+    @keyframes pfFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     #pf-chat-form {
       display: flex;
       align-items: center;
@@ -1052,12 +1047,12 @@
     <div id="pf-chat-log" aria-live="polite">
       <div class="pf-msg bot">Hi! Ask me about projects, skills, or experience.</div>
       <div class="pf-quick-prompts">
-        <button type="button" class="pf-prompt-chip" data-prompt="What are your featured projects?">🚀 Top
-          projects</button>
-        <button type="button" class="pf-prompt-chip" data-prompt="What's your tech stack?">💻 Tech
-          stack</button>
-        <button type="button" class="pf-prompt-chip" data-prompt="Are you looking for an OJT or IT internship for 4th year?">🎓
-          OJT &amp; Availability</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="What are your featured projects?" data-topic-id="projects">🚀 Top projects</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="Are you available for an OJT or internship?" data-topic-id="availability">💼 Availability</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="How can I contact John Ariel?" data-topic-id="contact">📧 Contact</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="Tell me about John Ariel and what you're studying." data-topic-id="about">👋 About John</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="What is your school, course, and education background?" data-topic-id="education">🎓 Education</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="What's your tech stack?" data-topic-id="techstack">💻 Tech stack</button>
       </div>
     </div>
 
@@ -1087,6 +1082,58 @@
       var send = document.getElementById("pf-chat-send");
       var closeBtn = document.getElementById("pf-chat-close");
       var history = [];
+
+      var ALL_TOPICS = [
+        { id: "projects", label: "🚀 Top projects", prompt: "What are your featured projects?" },
+        { id: "availability", label: "💼 Availability", prompt: "Are you available for an OJT or internship?" },
+        { id: "contact", label: "📧 Contact", prompt: "How can I contact John Ariel?" },
+        { id: "about", label: "👋 About John", prompt: "Tell me about John Ariel and what you're studying." },
+        { id: "education", label: "🎓 Education", prompt: "What is your school, course, and education background?" },
+        { id: "techstack", label: "💻 Tech stack", prompt: "What's your tech stack?" }
+      ];
+
+      var askedTopics = {};
+
+      function markTopicAsked(text) {
+        var lower = (text || "").toLowerCase();
+        if (/project|featured|portfolio|work|fuelops|void book|brew haven/.test(lower)) askedTopics["projects"] = true;
+        if (/availab|ojt|intern|hire|full-time|part-time|start/.test(lower)) askedTopics["availability"] = true;
+        if (/contact|email|reach|phone|call|github|linkedin|message/.test(lower)) askedTopics["contact"] = true;
+        if (/about|who are you|background|who is/.test(lower)) askedTopics["about"] = true;
+        if (/educat|school|college|course|degree|student|year|cebu eastern/.test(lower)) askedTopics["education"] = true;
+        if (/tech|stack|skill|language|framework|python|django|react/.test(lower)) askedTopics["techstack"] = true;
+      }
+
+      function getNextSuggestions() {
+        var unasked = ALL_TOPICS.filter(function (t) { return !askedTopics[t.id]; });
+        if (unasked.length === 0) {
+          unasked = ALL_TOPICS.slice(0, 3);
+        }
+        return unasked.slice(0, 3);
+      }
+
+      function renderFollowupChips() {
+        var oldFollowups = log.querySelectorAll(".pf-followup-prompts");
+        oldFollowups.forEach(function (el) { el.remove(); });
+
+        var suggestions = getNextSuggestions();
+        if (!suggestions.length) return;
+
+        var container = document.createElement("div");
+        container.className = "pf-quick-prompts pf-followup-prompts";
+        suggestions.forEach(function (t) {
+          var chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "pf-prompt-chip";
+          chip.setAttribute("data-prompt", t.prompt);
+          chip.setAttribute("data-topic-id", t.id);
+          chip.textContent = t.label;
+          container.appendChild(chip);
+        });
+
+        log.appendChild(container);
+        log.scrollTop = log.scrollHeight;
+      }
 
       // Strip all markdown except **bold** (which becomes highlights)
       function stripMarkdown(text) {
@@ -1139,16 +1186,19 @@
         });
       }
 
-      // Quick suggestion prompt chips
-      var chips = document.querySelectorAll(".pf-prompt-chip");
-      chips.forEach(function (chip) {
-        chip.addEventListener("click", function () {
-          var promptText = chip.getAttribute("data-prompt");
-          if (promptText) {
-            input.value = promptText;
-            form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event("submit", { cancelable: true }));
-          }
-        });
+      // Event delegation for all prompt chips (initial + dynamic follow-up)
+      log.addEventListener("click", function (e) {
+        var chip = e.target.closest(".pf-prompt-chip");
+        if (!chip) return;
+        var topicId = chip.getAttribute("data-topic-id");
+        if (topicId) {
+          askedTopics[topicId] = true;
+        }
+        var promptText = chip.getAttribute("data-prompt");
+        if (promptText) {
+          input.value = promptText;
+          form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event("submit", { cancelable: true }));
+        }
       });
 
       // 2) Reads the visible text of YOUR page, so the AI answers from it
@@ -1172,6 +1222,12 @@
         var q = input.value.trim();
         if (!q) return;
         input.value = "";
+        markTopicAsked(q);
+
+        // Remove previous follow-up chips when user asks a new question
+        var oldFollowups = log.querySelectorAll(".pf-followup-prompts");
+        oldFollowups.forEach(function (el) { el.remove(); });
+
         add(q, "user");
         history.push({ role: "user", content: q });
         send.disabled = true;
@@ -1180,12 +1236,13 @@
           var res = await fetch(API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ context: getPortfolioText(), messages: history.slice(-8) })
+            body: JSON.stringify({ context: getPortfolioText(), messages: history.slice(-6) })
           });
           var data = await res.json();
           if (!res.ok) throw new Error(data.error || "Request failed");
           pending.innerHTML = renderBotText(data.reply);
           history.push({ role: "assistant", content: data.reply });
+          renderFollowupChips();
         } catch (err) {
           pending.textContent = "I'm temporarily having trouble connecting to the AI service. Feel free to contact John Ariel directly at ramosjohnariel761@gmail.com or call/text 09388052961!";
           history.pop();
