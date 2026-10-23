@@ -11,4 +11,5 @@ yarn-error.log*
 
 # Vercel
 .vercel
-.gemini
+# Gemini
+.gemini/agent-settings.yaml
