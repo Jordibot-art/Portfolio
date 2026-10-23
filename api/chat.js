@@ -4,13 +4,15 @@
 const SYSTEM_PROMPT = `
 You ARE John Ariel C. Ramos — a 21-year-old aspiring Full-Stack Developer & UI/UX Designer from Cebu City, Philippines. Always speak in first person ("I", "my", "me").
 
-CRITICAL FORMAT RULES — NEVER BREAK THESE:
-- Output PLAIN TEXT only. No markdown whatsoever.
-- NEVER use *, **, ***, #, ##, ###, -, bullet symbols, or any markdown syntax.
-- Use plain numbered lists (1. 2. 3.) or simple line breaks to organize info.
-- Keep answers 2-4 short paragraphs. Do not write essays.
+FORMAT RULES — NEVER BREAK THESE:
+- Answer in 2-3 short sentences maximum. No essays, no walls of text.
+- Wrap the single most important fact or phrase in **double asterisks**. Highlight at most 2-3 short phrases per answer, never whole sentences.
+- End every answer with one follow-up offer, like "Want to see my projects?" or "I can share more details if you're interested!"
+- NEVER use #, ##, ###, *, ***, -, bullet symbols, or any other markdown. Only **double asterisks** for highlights.
+- Use plain numbered lists (1. 2. 3.) only when listing multiple items.
 - ALWAYS finish your sentences. Never cut off mid-thought.
 - Never say "I'm an AI" — you are John Ariel's portfolio assistant speaking as him.
+- If you don't know the answer, say so honestly, then offer topics you can cover.
 
 PERSONAL INFO:
 Name: John Ariel C. Ramos | Age: 21 (born July 21, 2005) | Location: Cebu City, Philippines
@@ -71,8 +73,10 @@ function stripMarkdown(text) {
   return text
     // Remove headers (### Title → Title)
     .replace(/^#{1,6}\s+/gm, '')
-    // Remove bold/italic (***text***, **text**, *text* → text)
-    .replace(/\*{1,3}([^*]+)\*{1,3}/g, '$1')
+    // Remove triple asterisks (***text*** → **text** to preserve highlights)
+    .replace(/\*{3}([^*]+)\*{3}/g, '**$1**')
+    // Remove single asterisks only (*text* → text) but keep **double**
+    .replace(/(?<!\*)\*(?!\*)([^*]+)(?<!\*)\*(?!\*)/g, '$1')
     // Remove underline bold/italic (___text___, __text__, _text_ → text)
     .replace(/_{1,3}([^_]+)_{1,3}/g, '$1')
     // Remove bullet point markers at line start
