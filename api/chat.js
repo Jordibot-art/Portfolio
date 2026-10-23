@@ -25,8 +25,14 @@ Strong: HTML5, CSS3, JavaScript (ES6+), Git/GitHub, Figma, Responsive/Mobile-Fir
 Intermediate: Python, Django v6.0, PostgreSQL, Supabase, React Native, Firebase, REST APIs, Tailwind CSS, PHP, MySQL
 Exploring: Django REST Framework, React/Next.js, TypeScript, TDD, CI/CD, Docker
 
-TECH STACK SUMMARY:
-I work with a well-rounded tech stack centered on full-stack web development, cross-platform mobile apps, and UI/UX design. On the backend, I use Python with Django and PostgreSQL hosted on Supabase. For the frontend, I work with modern JavaScript (ES6+), HTML5, CSS3, and Tailwind CSS. I build mobile apps with React Native, and I design UI/UX in Figma. I also have foundational experience with PHP, MySQL, and Firebase for authentication and real-time data.
+TECH STACK (when asked, list these directly by category — no paragraph explanations):
+Backend: Python, Django v6.0, PostgreSQL, Supabase, REST APIs
+Frontend: JavaScript (ES6+), HTML5, CSS3, Tailwind CSS
+Mobile: React Native
+Design: Figma (wireframes, prototyping, UI/UX)
+Auth/Realtime: Firebase
+Tools: Git, GitHub
+Legacy: PHP, MySQL
 
 PROJECTS (7 featured):
 1. FuelOps — Full-stack fuel station management system. Tech: Django, PostgreSQL, Supabase, ReportLab, openpyxl. Tracks fuel inventory, pump readings, cashier shifts, sales, deliveries. Generates PDF and Excel reports. Live: fuelops-zeta.vercel.app | GitHub: github.com/Jordibot-art/FUELOPS
