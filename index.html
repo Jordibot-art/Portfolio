@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>John Ariel Ramos — Full-Stack Developer &amp; UI/UX Designer</title>
+  <title>John Ariel C. Ramos — Full-Stack Developer &amp; UI/UX Designer</title>
   <meta name="description"
-    content="Portfolio of John Ariel Ramos — Aspiring Full-Stack Developer & UI/UX Designer from the Philippines. Building modern web and mobile applications with Django, Supabase, React Native, and JavaScript." />
+    content="Portfolio of John Ariel C. Ramos — Aspiring Full-Stack Developer & UI/UX Designer from the Philippines. Building modern web and mobile applications with Django, Supabase, React Native, and JavaScript." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -48,7 +48,7 @@
       <div class="hero__content">
         <h1 class="hero__title">
           Hi, I'm<br />
-          <span class="hero__name">John Ariel Ramos<span class="hero__dot">.</span></span>
+          <span class="hero__name">John Ariel C. Ramos<span class="hero__dot">.</span></span>
         </h1>
         <p class="hero__subtitle">
           Aspiring Full-Stack Developer &amp; UI/UX Designer<br />
@@ -435,7 +435,7 @@
     <div class="container about__inner">
       <div class="about__image-col">
         <div class="about__image-wrapper">
-          <img src="images/profilepic.png" alt="John Ariel Ramos" class="about__image" />
+          <img src="images/profilepic.png" alt="John Ariel C. Ramos" class="about__image" />
           <div class="about__image-badge">
             <span class="status-dot"></span>
             Lifelong Learner &amp; Builder
@@ -456,7 +456,7 @@
         <span class="section-label">ABOUT ME &amp; BACKGROUND</span>
         <h2 class="section-title">Passionate about code,<br />continuous learning &amp;<br />digital craft.</h2>
         <p class="about__text">
-          I'm <strong>John Ariel Ramos</strong>, an aspiring Full-Stack Developer and UI/UX Designer from the
+          I'm <strong>John Ariel C. Ramos</strong>, an aspiring Full-Stack Developer and UI/UX Designer from the
           Philippines. My path into technology began with a deep curiosity for how software transforms ideas into
           impactful, everyday solutions. As an Information Technology student and self-motivated builder, I focus on
           transforming classroom concepts into high-quality, practical web and mobile applications.
@@ -660,7 +660,7 @@
     </div>
     <div class="footer-bottom">
       <div class="container footer-bottom__inner">
-        <p>&copy; 2026 John Ariel Ramos. All rights reserved.</p>
+        <p>&copy; 2026 John Ariel C. Ramos. All rights reserved.</p>
         <a href="#header" class="back-to-top" id="back-to-top" aria-label="Back to top">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
             <path d="M12 19V5M5 12L12 5L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -919,6 +919,7 @@
         opacity: 0;
         transform: translateY(4px);
       }
+
       to {
         opacity: 1;
         transform: translateY(0);
@@ -1047,12 +1048,19 @@
     <div id="pf-chat-log" aria-live="polite">
       <div class="pf-msg bot">Hi! Ask me about projects, skills, or experience.</div>
       <div class="pf-quick-prompts">
-        <button type="button" class="pf-prompt-chip" data-prompt="What are your featured projects?" data-topic-id="projects">🚀 Top projects</button>
-        <button type="button" class="pf-prompt-chip" data-prompt="Are you available for an OJT or internship?" data-topic-id="availability">💼 Availability</button>
-        <button type="button" class="pf-prompt-chip" data-prompt="How can I contact John Ariel?" data-topic-id="contact">📧 Contact</button>
-        <button type="button" class="pf-prompt-chip" data-prompt="Tell me about John Ariel and what you're studying." data-topic-id="about">👋 About John</button>
-        <button type="button" class="pf-prompt-chip" data-prompt="What is your school, course, and education background?" data-topic-id="education">🎓 Education</button>
-        <button type="button" class="pf-prompt-chip" data-prompt="What's your tech stack?" data-topic-id="techstack">💻 Tech stack</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="What are your featured projects?"
+          data-topic-id="projects">🚀 Top projects</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="Are you available for an OJT or internship?"
+          data-topic-id="availability">💼 Availability</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="How can I contact John Ariel?"
+          data-topic-id="contact">📧 Contact</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="Tell me about John Ariel and what you're studying."
+          data-topic-id="about">👋 About John</button>
+        <button type="button" class="pf-prompt-chip"
+          data-prompt="What is your school, course, and education background?" data-topic-id="education">🎓
+          Education</button>
+        <button type="button" class="pf-prompt-chip" data-prompt="What's your tech stack?" data-topic-id="techstack">💻
+          Tech stack</button>
       </div>
     </div>
 
@@ -1144,7 +1152,7 @@
           .replace(/(?<!\*)\*(?!\*)([^*]+)(?<!\*)\*(?!\*)/g, '$1')
           .replace(/_{1,3}([^_]+)_{1,3}/g, '$1')
           .replace(/^[\s]*[-•]\s+/gm, '')
-          .replace(/```[\s\S]*?```/g, function(m) { return m.replace(/```\w*\n?/g, '').trim(); })
+          .replace(/```[\s\S]*?```/g, function (m) { return m.replace(/```\w*\n?/g, '').trim(); })
           .replace(/`([^`]+)`/g, '$1')
           .replace(/\n{3,}/g, '\n\n')
           .trim();

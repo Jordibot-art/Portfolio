@@ -88,6 +88,74 @@ function stripMarkdown(text) {
     .trim();
 }
 
+/**
+ * Smart knowledge-based fallback responder.
+ * If the Gemini API key is rate-limited (429) or temporarily unavailable,
+ * this function answers the visitor's specific question directly from John's
+ * verified knowledge base instead of repeating a generic introduction paragraph.
+ */
+function getSmartFallback(query) {
+  const q = (query || '').toLowerCase().trim();
+
+  // Role / group projects / coding vs system
+  if (/role|group project|contribution|coding or system|system or coding|team|position/.test(q)) {
+    return "In group and collaborative projects, I take on the **Full-Stack Developer and UI/UX Designer** role, handling both core system architecture (database schema, Django/PHP backend logic) and coding the interactive user interface. In projects like FuelOps and Void Book, I led both system design and coding. Would you like to check out my **top projects** or **tech stack**?";
+  }
+
+  // Greetings
+  if (/^(hi|hello|hey|good\s*(morning|afternoon|evening)|sup|yo)[\s!.]*$/i.test(q) || q === 'hi' || q === 'hello') {
+    return "Hi! I'm **John Ariel**, a 4th-year BSIT student and Full-Stack Developer based in Cebu City. Feel free to explore my portfolio or ask anything about my work. Would you like to check out my **top projects**, **tech stack**, or **availability**?";
+  }
+
+  // Top projects
+  if (/project|featured|portfolio|work|fuelops|void book|brew haven|novel|shiftgear|mambaling|balete/.test(q)) {
+    return "My top featured projects include **FuelOps** (fuel station management with Django and Supabase), **Void Book** (digital library platform with text highlighting), and **Brew Haven** (e-commerce coffee shop with a custom security firewall). Would you like live demo links or to see my **tech stack**?";
+  }
+
+  // Tech stack / skills
+  if (/tech|stack|skill|language|framework|python|django|react|javascript|postgres|supabase|figma/.test(q)) {
+    return "My primary stack centers on **Django, PostgreSQL, and Supabase** for robust backend logic, alongside **JavaScript (ES6+), HTML5, and CSS3** for frontend interfaces, and **React Native** for mobile apps. Would you like to see the **featured projects** where I applied this stack?";
+  }
+
+  // Availability / OJT / Internship
+  if (/availab|ojt|intern|hire|job|work|start|remote|on-site|full-time|part-time/.test(q)) {
+    return "I am actively seeking an **IT-related OJT placement** for my 2nd semester as a 4th-year BSIT student at Cebu Eastern College. I am available for immediate start and open to **remote or on-site opportunities in Cebu**. Would you like my **contact details** or to review my **top projects**?";
+  }
+
+  // Education / school / college
+  if (/educat|school|college|course|degree|student|year|cebu eastern|cec|bsit|study|studying/.test(q)) {
+    return "I am a **4th-year BSIT student** at **Cebu Eastern College** in Cebu City, Philippines, preparing for my 2nd-semester OJT. My coursework covers full-stack web architectures, database management, and mobile development, complemented by self-directed projects in modern frameworks. Would you like to explore my **availability** or **top projects**?";
+  }
+
+  // Contact / email / phone
+  if (/contact|email|reach|phone|call|github|linkedin|message|number/.test(q)) {
+    return "You can reach me directly via email at **ramosjohnariel761@gmail.com**, phone or text at **09388052961**, or explore my code on GitHub at **github.com/Jordibot-art**. Are you interested in discussing an **OJT placement** or collaborating on a project?";
+  }
+
+  // About John / background
+  if (/about|who are you|background|who is john|tell me about/.test(q)) {
+    return "I'm a **21-year-old aspiring Full-Stack Developer** and UI/UX Designer based in Cebu City, Philippines. I'm currently in my **4th year studying BSIT at Cebu Eastern College**, focused on building robust web and mobile applications with Django and Supabase. Want to see my **top projects** or my **tech stack**?";
+  }
+
+  // Resume / CV
+  if (/resume|cv|curriculum vitae|download/.test(q)) {
+    return "My official CV is currently being finalized for upcoming OJT applications. In the meantime, all my verified project contributions, skills, education, and contact details are highlighted across this portfolio. Would you like my **contact information** or a walkthrough of my **top projects**?";
+  }
+
+  // Hobbies / fitness / gym
+  if (/hobby|hobbies|fitness|gym|workout|strength|game|games|folklore|interest/.test(q)) {
+    return "Beyond coding, I'm dedicated to **fitness and gym strength training**, which builds the discipline and patience I bring to software development. I also love creative development, like building a 3D horror game in Unity inspired by **Filipino folklore**. Want to see my game project or talk about my **top projects**?";
+  }
+
+  // Goals
+  if (/goal|future|learn next|plan|aspire|aspirations/.test(q)) {
+    return "My immediate goal is securing an **IT OJT / internship placement** where I can contribute to production systems and learn from experienced engineering teams. Long term, I aim to master Docker, CI/CD, and Django REST Framework. Want to know more about my **availability** or **tech stack**?";
+  }
+
+  // Default fallback
+  return "I'm here to help with questions about John Ariel's work and background! You can ask about my **top projects**, **tech stack**, **availability for an OJT**, **education**, or how to **contact me**. What would you like to know?";
+}
+
 export default async function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -106,24 +174,20 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed. Use POST.' });
   }
 
+  const { messages = [] } = req.body || {};
+  const lastUserMsg = (messages.filter(m => m && m.role === 'user').pop()?.content || '').trim();
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({
-      error: 'GEMINI_API_KEY is not configured on the server. Please add GEMINI_API_KEY to your Vercel Environment Variables.'
-    });
+    // Graceful offline fallback if key is unconfigured
+    return res.status(200).json({ reply: getSmartFallback(lastUserMsg) });
   }
 
   try {
-    const { messages = [], context = '' } = req.body || {};
-
     // Build conversation contents for Gemini API (roles: "user" | "model")
     const contents = [];
-
-    // Keep last 6 messages to prevent hallucination in long conversations
-    // while preserving enough context for continuity
     const recentMessages = messages.slice(-6);
 
-    // Format conversation history
     for (const msg of recentMessages) {
       if (!msg || !msg.content) continue;
       const role = msg.role === 'assistant' ? 'model' : 'user';
@@ -133,48 +197,35 @@ export default async function handler(req, res) {
       });
     }
 
-    // Fallback if no messages were passed
     if (contents.length === 0) {
       return res.status(400).json({ error: 'No messages provided in request.' });
     }
 
-    // Optional dynamic page context from client (trimmed to save tokens)
-    const dynamicContext = context
-      ? `\n\nCurrent Page Visible Text Content:\n${context.slice(0, 3000)}`
-      : '';
-
     const payload = {
       system_instruction: {
-        parts: [
-          {
-            text: SYSTEM_PROMPT + dynamicContext
-          }
-        ]
+        parts: [{ text: SYSTEM_PROMPT }]
       },
       contents: contents,
       generationConfig: {
         temperature: 0.3,
-        maxOutputTokens: 2048,
-        thinkingConfig: {
-          thinkingBudget: 0
-        }
+        maxOutputTokens: 1024
       }
     };
 
-    // Fast, active models with available quota
+    // Candidate models to try
     const candidateModels = [
-      'gemini-3-flash-preview',
       'gemini-3.5-flash',
       'gemini-3.6-flash',
+      'gemini-3-flash-preview',
       'gemini-2.5-flash'
     ];
+
     let geminiRes = null;
-    let lastErrText = '';
 
     for (const model of candidateModels) {
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 12000);
+      const timer = setTimeout(() => controller.abort(), 8000);
 
       try {
         const res = await fetch(geminiUrl, {
@@ -188,35 +239,36 @@ export default async function handler(req, res) {
         if (res.ok) {
           geminiRes = res;
           break;
+        } else if (res.status === 429) {
+          // Rate limit / daily quota hit for project, don't spam remaining models
+          console.warn(`Model ${model} rate-limited (HTTP 429). Using smart fallback.`);
+          break;
         } else {
-          lastErrText = await res.text();
-          console.warn(`Model ${model} failed (status ${res.status}), trying next candidate.`);
+          console.warn(`Model ${model} returned status ${res.status}, trying next.`);
         }
       } catch (reqErr) {
         clearTimeout(timer);
-        console.warn(`Model ${model} request error/timeout:`, reqErr.message);
+        console.warn(`Model ${model} error/timeout:`, reqErr.message);
       }
     }
 
     if (!geminiRes) {
-      console.warn('All Gemini candidate models failed. Returning graceful fallback. Last err:', lastErrText);
-      const fallbackReply = "I'm John Ariel C. Ramos, a 21-year-old aspiring Full-Stack Developer & UI/UX Designer from Cebu City, Philippines. I'm currently a 4th-year BSIT student actively looking for an IT-related On-the-Job Training (OJT) placement for my upcoming 2nd semester. If you'd like to get in touch, please call or text me at 09388052961 or email ramosjohnariel761@gmail.com!";
+      // Intelligently answer from local knowledge base matching the visitor's question
+      const fallbackReply = getSmartFallback(lastUserMsg);
       return res.status(200).json({ reply: fallbackReply });
     }
 
     const data = await geminiRes.json();
     let reply =
       data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "I'm here to help, but I couldn't generate a response. Feel free to reach me at ramosjohnariel761@gmail.com or call 09388052961!";
+      getSmartFallback(lastUserMsg);
 
-    // Strip any markdown that slipped through despite instructions
+    // Strip markdown formatting while preserving double asterisks for highlights
     reply = stripMarkdown(reply);
 
     return res.status(200).json({ reply });
   } catch (err) {
     console.error('Server handler error:', err);
-    return res.status(200).json({
-      reply: "Hi! I'm John Ariel C. Ramos. I'm currently looking for an IT-related OJT placement for 2nd semester of 4th year. You can reach me directly at 09388052961 or ramosjohnariel761@gmail.com!"
-    });
+    return res.status(200).json({ reply: getSmartFallback(lastUserMsg) });
   }
 }
