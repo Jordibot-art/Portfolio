@@ -12,7 +12,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
-  <link rel="icon" href="images\favicon.png" type="image/x-icon">
+  <link rel="icon" href="images/favicon.png" type="image/png">
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -29,14 +29,21 @@
         <a href="#about" class="nav__link">About</a>
         <a href="#skills" class="nav__link">Skills</a>
         <a href="#contact" class="nav__link">Contact</a>
+        <button type="button" class="btn btn--primary nav__mobile-cta" id="mobile-nav-cta">
+          Let's talk
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M1 13L13 1M13 1H3M13 1V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </button>
       </nav>
-      <a href="#" class="btn btn--primary header__cta" id="header-cta">
+      <button type="button" class="btn btn--primary header__cta" id="header-cta">
         Let's talk
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M1 13L13 1M13 1H3M13 1V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
             stroke-linejoin="round" />
         </svg>
-      </a>
+      </button>
       <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle menu">
         <span></span><span></span><span></span>
       </button>
@@ -91,13 +98,13 @@
           <p class="hero__card-text">
             4th-year BSIT student actively seeking an <strong>IT-related OJT placement for 2nd Semester</strong>.
           </p>
-          <a href="#" class="hero__card-link" id="hero-ojt-contact-btn">
+          <button type="button" class="hero__card-link" id="hero-ojt-contact-btn">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M1 7H13M13 7L7 1M13 7L7 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                 stroke-linejoin="round" />
             </svg>
             Get in touch
-          </a>
+          </button>
         </div>
       </div>
     </div>
@@ -1128,18 +1135,40 @@
 
     @media (max-width: 480px) {
       #pf-chat-btn {
-        right: 16px;
-        bottom: 16px;
-        padding: 10px 16px;
+        right: 14px;
+        bottom: 14px;
+        padding: 9px 15px;
         font-size: 13px;
       }
 
       #pf-chat {
-        right: 16px;
-        left: 16px;
-        bottom: 74px;
+        right: 10px;
+        left: 10px;
+        bottom: 68px;
         width: auto;
-        height: min(490px, calc(100vh - 90px));
+        height: min(520px, calc(100dvh - 84px));
+        border-radius: 14px;
+      }
+
+      #pf-chat-input {
+        font-size: 16px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      #pf-chat-btn {
+        right: 10px;
+        bottom: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+        gap: 6px;
+      }
+
+      #pf-chat {
+        right: 6px;
+        left: 6px;
+        bottom: 60px;
+        height: calc(100dvh - 72px);
       }
     }
   </style>

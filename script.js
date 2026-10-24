@@ -191,7 +191,7 @@
   // ==========================================
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
-      if (this.id === 'view-all-btn') return; // Handled by popup modal
+      if (this.id === 'view-all-btn' || this.id === 'header-cta' || this.id === 'hero-ojt-contact-btn' || this.id === 'mobile-nav-cta' || this.hasAttribute('data-action')) return;
       const href = this.getAttribute('href');
       if (!href) return;
 
@@ -614,6 +614,19 @@
   if (headerCta) {
     headerCta.addEventListener('click', (e) => {
       e.preventDefault();
+      e.stopPropagation();
+      openContactModal('general');
+    });
+  }
+
+  // Mobile nav "Let's talk" CTA
+  const mobileNavCta = document.getElementById('mobile-nav-cta');
+  if (mobileNavCta) {
+    mobileNavCta.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (mobileToggle) mobileToggle.classList.remove('active');
+      if (nav) nav.classList.remove('open');
       openContactModal('general');
     });
   }
@@ -623,6 +636,7 @@
   if (heroOjtBtn) {
     heroOjtBtn.addEventListener('click', (e) => {
       e.preventDefault();
+      e.stopPropagation();
       openContactModal('ojt');
     });
   }
@@ -632,6 +646,7 @@
   if (footerContactBtn) {
     footerContactBtn.addEventListener('click', (e) => {
       e.preventDefault();
+      e.stopPropagation();
       openContactModal('general');
     });
   }
@@ -641,6 +656,7 @@
   if (chatHeaderContactBtn) {
     chatHeaderContactBtn.addEventListener('click', (e) => {
       e.preventDefault();
+      e.stopPropagation();
       openContactModal('general');
     });
   }
@@ -650,6 +666,7 @@
     const btn = e.target.closest('[data-action="open-contact-modal"]');
     if (btn) {
       e.preventDefault();
+      e.stopPropagation();
       const purpose = btn.getAttribute('data-purpose') || 'general';
       openContactModal(purpose);
     }
