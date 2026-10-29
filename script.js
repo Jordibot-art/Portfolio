@@ -149,7 +149,137 @@
   }
 
   // ==========================================
-  // HEADER SCROLL EFFECT
+  // FLOATING & FOOTER BACK TO TOP (ARROW UP)
+  // ==========================================
+  const backToTopBtn = document.getElementById('back-to-top');
+  const floatingBackToTop = document.getElementById('floating-back-to-top');
+
+  function scrollToTop(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    clearActiveNav();
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
+
+  if (backToTopBtn) {
+    backToTopBtn.addEventListener('click', scrollToTop);
+  }
+
+  if (floatingBackToTop) {
+    floatingBackToTop.addEventListener('click', scrollToTop);
+  }
+
+  // ==========================================
+  // THEME SWITCHER (DARK & WHITE / LIGHT MODE)
+  // ==========================================
+  const themeToggle = document.getElementById('theme-toggle');
+  const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+  const metaColorScheme = document.querySelector('meta[name="color-scheme"]');
+
+  function getSystemTheme() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+
+  function getStoredTheme() {
+    try {
+      return localStorage.getItem('theme');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getCurrentTheme() {
+    return document.documentElement.getAttribute('data-theme') || getStoredTheme() || getSystemTheme();
+  }
+
+  function updateToggleUI(theme) {
+    const isDark = theme === 'dark';
+    const label = isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+
+    if (themeToggle) {
+      themeToggle.setAttribute('aria-label', label);
+      themeToggle.setAttribute('title', label);
+    }
+
+    if (mobileThemeToggle) {
+      mobileThemeToggle.setAttribute('aria-label', label);
+      const textSpan = mobileThemeToggle.querySelector('.theme-toggle__text');
+      if (textSpan) {
+        textSpan.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+      }
+    }
+  }
+
+  function applyTheme(theme, persist = true) {
+    // Add smooth transition class temporarily
+    document.documentElement.classList.add('theme-transition');
+
+    document.documentElement.setAttribute('data-theme', theme);
+    if (metaColorScheme) {
+      metaColorScheme.content = theme;
+    }
+
+    if (persist) {
+      try {
+        localStorage.setItem('theme', theme);
+      } catch (e) { }
+    }
+
+    updateToggleUI(theme);
+
+    // Remove transition class after animation completes
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-transition');
+    }, 320);
+  }
+
+  function toggleTheme() {
+    const current = getCurrentTheme();
+    const next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next, true);
+  }
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+
+  if (mobileThemeToggle) {
+    mobileThemeToggle.addEventListener('click', (e) => {
+      e.preventDefault();
+      toggleTheme();
+    });
+  }
+
+  // Listen to OS system theme changes if user hasn't set an explicit override
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      if (!getStoredTheme()) {
+        applyTheme(e.matches ? 'dark' : 'light', false);
+      }
+    });
+  }
+
+  // Cross-tab synchronization
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'theme') {
+      const newTheme = e.newValue || getSystemTheme();
+      applyTheme(newTheme, false);
+    }
+  });
+
+  // Ensure initial UI is synced
+  updateToggleUI(getCurrentTheme());
+
+  // ==========================================
+  // HEADER SCROLL EFFECT & BACK TO TOP VISIBILITY
   // ==========================================
   let lastScroll = 0;
 
@@ -160,6 +290,14 @@
       header.classList.add('scrolled');
     } else {
       header.classList.remove('scrolled');
+    }
+
+    if (floatingBackToTop) {
+      if (currentScroll > 360) {
+        floatingBackToTop.classList.add('visible');
+      } else {
+        floatingBackToTop.classList.remove('visible');
+      }
     }
 
     lastScroll = currentScroll;
@@ -195,10 +333,9 @@
       const href = this.getAttribute('href');
       if (!href) return;
 
-      if (href === '#') {
-        e.preventDefault();
-        clearActiveNav();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Handle back to top or header scroll to top smoothly
+      if (href === '#' || href === '#header' || href === '#top' || this.id === 'back-to-top' || this.classList.contains('back-to-top')) {
+        scrollToTop(e);
         return;
       }
 
